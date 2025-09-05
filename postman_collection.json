@@ -1,0 +1,2297 @@
+{
+  "info": {
+    "name": "Bangkok Train Transport System API",
+    "description": "Complete API collection for Bangkok Train Transport System with sample data",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "api_prefix",
+      "value": "/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Root & Health",
+      "item": [
+        {
+          "name": "Root Endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            }
+          }
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "register"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('user_id', response.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"securePassword123\",\n  \"totp_code\": null\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('access_token', response.access_token);",
+                  "    pm.collectionVariables.set('access_token', response.access_token);",
+                  "    pm.environment.set('user_id', response.user.id);",
+                  "    pm.environment.set('is_admin', response.user.is_admin);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Smith\",\n  \"email\": \"john.smith@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "refresh"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set('access_token', response.access_token);",
+                  "    pm.collectionVariables.set('access_token', response.access_token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"current_password\": \"currentPassword123\",\n  \"new_password\": \"newPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "change-password"]
+            }
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/forgot-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "forgot-password"]
+            }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"reset_token_here\",\n  \"new_password\": \"newPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/reset-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "reset-password"]
+            }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"verification_token_here\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/auth/verify-email",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "auth", "verify-email"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stations",
+      "item": [
+        {
+          "name": "Get All Stations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations?skip=0&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations"],
+              "query": [
+                {
+                  "key": "skip",
+                  "value": "0"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "query",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "line_id",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "is_interchange",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search Stations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations/search?q=Central&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "Central"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Nearby Stations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations/nearby?lat=13.7563&lng=100.5018&radius_km=2.0&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations", "nearby"],
+              "query": [
+                {
+                  "key": "lat",
+                  "value": "13.7563"
+                },
+                {
+                  "key": "lng",
+                  "value": "100.5018"
+                },
+                {
+                  "key": "radius_km",
+                  "value": "2.0"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Interchange Stations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations/interchanges",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations", "interchanges"]
+            }
+          }
+        },
+        {
+          "name": "Get Station by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations/1",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Station Transfers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations/1/transfers",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations", "1", "transfers"]
+            }
+          }
+        },
+        {
+          "name": "Get Station by Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations/code/BTS001",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations", "code", "BTS001"]
+            }
+          }
+        },
+        {
+          "name": "Get Station Facilities",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations/1/facilities",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations", "1", "facilities"]
+            }
+          }
+        },
+        {
+          "name": "Get Station Accessibility",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations/1/accessibility",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations", "1", "accessibility"]
+            }
+          }
+        },
+        {
+          "name": "Get Station Real-time Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/stations/1/real-time-info",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "stations", "1", "real-time-info"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Route Planning",
+      "item": [
+        {
+          "name": "Plan Journey",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from_station_id\": 1,\n  \"to_station_id\": 10,\n  \"departure_time\": \"2024-09-05T08:00:00\",\n  \"passenger_count\": 1,\n  \"optimization\": \"time\",\n  \"max_transfers\": 2,\n  \"preferences\": {}\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/plan",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "plan"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.plan_id) {",
+                  "        pm.environment.set('plan_id', response.plan_id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Journey Plan Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/plan/{{plan_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "plan", "{{plan_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Alternative Routes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"max_alternatives\": 3,\n  \"exclude_routes\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/plan/{{plan_id}}/alternatives",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "plan", "{{plan_id}}", "alternatives"]
+            }
+          }
+        },
+        {
+          "name": "Update Route Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"optimization\": \"cost\",\n  \"avoid_lines\": [2],\n  \"prefer_accessibility\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/plan/{{plan_id}}/preferences",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "plan", "{{plan_id}}", "preferences"]
+            }
+          }
+        },
+        {
+          "name": "Get Popular Routes",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/popular?limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "popular"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Shortest Route",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/shortest/1/10",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "shortest", "1", "10"]
+            }
+          }
+        },
+        {
+          "name": "Get Fastest Route",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/fastest/1/10",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "fastest", "1", "10"]
+            }
+          }
+        },
+        {
+          "name": "Batch Plan Routes",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"route_requests\": [\n    {\n      \"from_station_id\": 1,\n      \"to_station_id\": 5\n    },\n    {\n      \"from_station_id\": 3,\n      \"to_station_id\": 8\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/batch-plan",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "batch-plan"]
+            }
+          }
+        },
+        {
+          "name": "Get Network Connections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/network/connections",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "network", "connections"]
+            }
+          }
+        },
+        {
+          "name": "Get Active Route Disruptions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/disruptions/active",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "disruptions", "active"]
+            }
+          }
+        },
+        {
+          "name": "Calculate Fare (Legacy)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"route_segments\": [\n    {\n      \"from_station_id\": 1,\n      \"to_station_id\": 5,\n      \"line_id\": 1,\n      \"distance_km\": 10.5\n    }\n  ],\n  \"passenger_type_id\": 1,\n  \"total_distance_km\": 10.5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/routes/fare-calculate",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "routes", "fare-calculate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Schedules & Real-time",
+      "item": [
+        {
+          "name": "Get Station Schedule",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/station/1?hours_ahead=2&include_alerts=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "station", "1"],
+              "query": [
+                {
+                  "key": "hours_ahead",
+                  "value": "2"
+                },
+                {
+                  "key": "include_alerts",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Line Schedule",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/line/1?include_stations=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "line", "1"],
+              "query": [
+                {
+                  "key": "include_stations",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Next Departures",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/departures/next?station_ids=1,2,3&limit=5",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "departures", "next"],
+              "query": [
+                {
+                  "key": "station_ids",
+                  "value": "1,2,3"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Service Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/service-status?line_ids=1,2&active_only=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "service-status"],
+              "query": [
+                {
+                  "key": "line_ids",
+                  "value": "1,2"
+                },
+                {
+                  "key": "station_ids",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "active_only",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Service Status",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"line_id\": 1,\n  \"status\": \"delayed\",\n  \"message\": \"Minor delays due to signal issues\",\n  \"severity\": \"medium\",\n  \"estimated_duration_minutes\": 15\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/service-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "service-status"]
+            }
+          }
+        },
+        {
+          "name": "Get Service Alerts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/alerts?active_only=true&severity=medium",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "alerts"],
+              "query": [
+                {
+                  "key": "line_ids",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "station_ids",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "alert_types",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "active_only",
+                  "value": "true"
+                },
+                {
+                  "key": "severity",
+                  "value": "medium"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Service Alert",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/alerts?title=Signal Issue&description=Technical problems with signaling system&alert_type=disruption&severity=medium&affected_lines=1,2&duration_minutes=30",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "alerts"],
+              "query": [
+                {
+                  "key": "title",
+                  "value": "Signal Issue"
+                },
+                {
+                  "key": "description",
+                  "value": "Technical problems with signaling system"
+                },
+                {
+                  "key": "alert_type",
+                  "value": "disruption"
+                },
+                {
+                  "key": "severity",
+                  "value": "medium"
+                },
+                {
+                  "key": "affected_lines",
+                  "value": "1,2"
+                },
+                {
+                  "key": "affected_stations",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "duration_minutes",
+                  "value": "30"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Resolve Service Alert",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/alerts/1/resolve?resolution_note=Issue resolved by engineering team",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "alerts", "1", "resolve"],
+              "query": [
+                {
+                  "key": "resolution_note",
+                  "value": "Issue resolved by engineering team"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Maintenance Windows",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/maintenance?active_only=true&upcoming_only=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "maintenance"],
+              "query": [
+                {
+                  "key": "active_only",
+                  "value": "true"
+                },
+                {
+                  "key": "upcoming_only",
+                  "value": "false"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Schedule Maintenance",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Track Maintenance - Line 1\",\n  \"description\": \"Regular track maintenance and inspection\",\n  \"start_time\": \"2024-09-10T02:00:00\",\n  \"end_time\": \"2024-09-10T05:00:00\",\n  \"affected_lines\": [1],\n  \"affected_stations\": [1, 2, 3],\n  \"maintenance_type\": \"track\",\n  \"priority\": \"high\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/maintenance",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "maintenance"]
+            }
+          }
+        },
+        {
+          "name": "Get Schedule Performance",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/performance?line_id=1&days_back=7",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "performance"],
+              "query": [
+                {
+                  "key": "line_id",
+                  "value": "1"
+                },
+                {
+                  "key": "station_id",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "days_back",
+                  "value": "7"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get System Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/system-status",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "system-status"]
+            }
+          }
+        },
+        {
+          "name": "Get Real-time Trains",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/real-time/trains?line_id=1",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "real-time", "trains"],
+              "query": [
+                {
+                  "key": "line_id",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Real-time Arrivals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/real-time/arrivals/1?hours_ahead=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "real-time", "arrivals", "1"],
+              "query": [
+                {
+                  "key": "hours_ahead",
+                  "value": "2"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Real-time Departures",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/real-time/departures/1?hours_ahead=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "real-time", "departures", "1"],
+              "query": [
+                {
+                  "key": "hours_ahead",
+                  "value": "2"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Real-time Train Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/real-time/train/TRAIN001",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "real-time", "train", "TRAIN001"]
+            }
+          }
+        },
+        {
+          "name": "Get Route Schedule",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/route/ROUTE001",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "route", "ROUTE001"]
+            }
+          }
+        },
+        {
+          "name": "Get Train Schedule",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/train/TRAIN001",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "train", "TRAIN001"]
+            }
+          }
+        },
+        {
+          "name": "Get Service Disruptions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/disruptions?active_only=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "disruptions"],
+              "query": [
+                {
+                  "key": "active_only",
+                  "value": "true"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Disruption Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/disruptions/DISRUPT001",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "disruptions", "DISRUPT001"]
+            }
+          }
+        },
+        {
+          "name": "Subscribe to Service Alerts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": 1,\n  \"notification_types\": [\"email\", \"push\"],\n  \"line_ids\": [1, 2],\n  \"station_ids\": [1, 5, 10]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/alerts/subscribe",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "alerts", "subscribe"]
+            }
+          }
+        },
+        {
+          "name": "Unsubscribe from Service Alerts",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/schedules/alerts/unsubscribe?user_id=1&subscription_ids=SUB001,SUB002",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "schedules", "alerts", "unsubscribe"],
+              "query": [
+                {
+                  "key": "user_id",
+                  "value": "1"
+                },
+                {
+                  "key": "subscription_ids",
+                  "value": "SUB001,SUB002"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Booking & Ticketing",
+      "item": [
+        {
+          "name": "Plan Journey for Booking",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/plan-journey?from_station_id=1&to_station_id=10&departure_time=2024-09-05T08:00:00&passenger_count=2&optimization=time",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "plan-journey"],
+              "query": [
+                {
+                  "key": "from_station_id",
+                  "value": "1"
+                },
+                {
+                  "key": "to_station_id",
+                  "value": "10"
+                },
+                {
+                  "key": "departure_time",
+                  "value": "2024-09-05T08:00:00"
+                },
+                {
+                  "key": "passenger_count",
+                  "value": "2"
+                },
+                {
+                  "key": "optimization",
+                  "value": "time"
+                },
+                {
+                  "key": "max_transfers",
+                  "value": "3",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.journey_id) {",
+                  "        pm.environment.set('journey_id', response.journey_id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Journey Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/journey/{{journey_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "journey", "{{journey_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Journey Alternatives",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/journey/{{journey_id}}/alternatives?max_alternatives=3",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "journey", "{{journey_id}}", "alternatives"],
+              "query": [
+                {
+                  "key": "max_alternatives",
+                  "value": "3"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Booking Reservation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"journey_id\": \"{{journey_id}}\",\n  \"passenger_count\": 2,\n  \"passenger_details\": [\n    {\n      \"passenger_type_id\": 1,\n      \"name\": \"John Doe\",\n      \"id_document\": \"ID1234567890\",\n      \"contact_phone\": \"+66123456789\"\n    },\n    {\n      \"passenger_type_id\": 2,\n      \"name\": \"Jane Doe\",\n      \"id_document\": \"ID0987654321\",\n      \"contact_phone\": \"+66987654321\"\n    }\n  ],\n  \"contact_email\": \"john.doe@example.com\",\n  \"contact_phone\": \"+66123456789\",\n  \"special_requirements\": [\"wheelchair_access\"],\n  \"preferred_seats\": [\"window\", \"aisle\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/reserve",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "reserve"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.booking_id) {",
+                  "        pm.environment.set('booking_id', response.booking_id);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Confirm Booking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payment_method_type\": \"credit_card\",\n  \"payment_details\": {\n    \"card_number\": \"4111111111111111\",\n    \"expiry_month\": 12,\n    \"expiry_year\": 2026,\n    \"cvv\": \"123\",\n    \"cardholder_name\": \"John Doe\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/{{booking_id}}/confirm",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "{{booking_id}}", "confirm"]
+            }
+          }
+        },
+        {
+          "name": "Get Booking by Reference",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/reference/BK123456789",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "reference", "BK123456789"]
+            }
+          }
+        },
+        {
+          "name": "Get User Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/user/1?booking_status=confirmed&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "user", "1"],
+              "query": [
+                {
+                  "key": "booking_status",
+                  "value": "confirmed"
+                },
+                {
+                  "key": "payment_status",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "date_from",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "date_to",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Modify Booking",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"new_departure_time\": \"2024-09-05T09:00:00\",\n  \"passenger_details_updates\": [\n    {\n      \"passenger_index\": 0,\n      \"name\": \"John Smith\",\n      \"contact_phone\": \"+66111222333\"\n    }\n  ],\n  \"special_requirements\": [\"extra_legroom\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/{{booking_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "{{booking_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Booking",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"cancellation_reason\": \"Change of plans\",\n  \"requested_refund_amount\": null,\n  \"contact_email\": \"john.doe@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/{{booking_id}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "{{booking_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Booking Tickets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/{{booking_id}}/tickets",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "{{booking_id}}", "tickets"]
+            }
+          }
+        },
+        {
+          "name": "Get Ticket",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/{{booking_id}}/ticket/TICKET123",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "{{booking_id}}", "ticket", "TICKET123"]
+            }
+          }
+        },
+        {
+          "name": "Get Ticket QR Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/{{booking_id}}/ticket/TICKET123/qr?size=300",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "{{booking_id}}", "ticket", "TICKET123", "qr"],
+              "query": [
+                {
+                  "key": "size",
+                  "value": "300"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Generate PDF Tickets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/{{booking_id}}/pdf?template_style=standard&include_qr_codes=true&language=en",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "{{booking_id}}", "pdf"],
+              "query": [
+                {
+                  "key": "template_style",
+                  "value": "standard"
+                },
+                {
+                  "key": "include_qr_codes",
+                  "value": "true"
+                },
+                {
+                  "key": "include_journey_map",
+                  "value": "false",
+                  "disabled": true
+                },
+                {
+                  "key": "language",
+                  "value": "en"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Validate Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"qr_code_data\": \"TICKET123_VALIDATION_DATA\",\n  \"validation_station_id\": 1,\n  \"validation_time\": \"2024-09-05T08:30:00\",\n  \"validator_id\": \"VALIDATOR_001\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/tickets/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "tickets", "validate"]
+            }
+          }
+        },
+        {
+          "name": "Get Validation Logs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/tickets/validation-logs?limit=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "tickets", "validation-logs"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cleanup Expired Bookings",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/cleanup-expired",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "cleanup-expired"]
+            }
+          }
+        },
+        {
+          "name": "Get Booking Analytics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/analytics?date_from=2024-09-01&date_to=2024-09-30",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "analytics"],
+              "query": [
+                {
+                  "key": "date_from",
+                  "value": "2024-09-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2024-09-30"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Booking Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "statistics"]
+            }
+          }
+        },
+        {
+          "name": "Search Bookings",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{api_prefix}}/bookings/search?booking_reference=BK123456789&booking_status=confirmed&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["{{api_prefix}}", "bookings", "search"],
+              "query": [
+                {
+                  "key": "booking_reference",
+                  "value": "BK123456789"
+                },
+                {
+                  "key": "contact_email",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "booking_status",
+                  "value": "confirmed"
+                },
+                {
+                  "key": "payment_status",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "date_from",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "date_to",
+                  "value": "",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin System",
+      "item": [
+        {
+          "name": "Authentication",
+          "item": [
+            {
+              "name": "Admin Login (Use Regular Login)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"adminPassword123\",\n  \"totp_code\": \"123456\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}{{api_prefix}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{api_prefix}}", "auth", "login"]
+                }
+              },
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "if (pm.response.code === 200) {",
+                      "    const response = pm.response.json();",
+                      "    if (response.access_token && response.user.is_admin) {",
+                      "        pm.environment.set('admin_access_token', response.access_token);",
+                      "        pm.collectionVariables.set('access_token', response.access_token);",
+                      "    }",
+                      "}"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Setup 2FA",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}{{api_prefix}}/admin/auth/2fa/setup",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{api_prefix}}", "admin", "auth", "2fa", "setup"]
+                }
+              }
+            },
+            {
+              "name": "Verify 2FA",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"totp_code\": \"123456\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}{{api_prefix}}/admin/auth/2fa/verify",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{api_prefix}}", "admin", "auth", "2fa", "verify"]
+                }
+              }
+            },
+            {
+              "name": "Admin Logout",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}{{api_prefix}}/admin/auth/logout",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{api_prefix}}", "admin", "auth", "logout"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Dashboard",
+          "item": [
+            {
+              "name": "Get Dashboard Data",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}{{api_prefix}}/admin/dashboard",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{api_prefix}}", "admin", "dashboard"]
+                }
+              }
+            },
+            {
+              "name": "Get System Metrics",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}{{api_prefix}}/admin/metrics",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["{{api_prefix}}", "admin", "metrics"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "System Health",
+          "item": [
+            {
+              "name": "Get System Health",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/health",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "health"]
+                }
+              }
+            },
+            {
+              "name": "Get Health Components",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/health/components",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "health", "components"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Performance",
+          "item": [
+            {
+              "name": "Get Current Performance",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/performance/current",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "performance", "current"]
+                }
+              }
+            },
+            {
+              "name": "Get Performance Report",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/performance/report?hours=24",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "performance", "report"],
+                  "query": [
+                    {
+                      "key": "hours",
+                      "value": "24"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "User Management",
+          "item": [
+            {
+              "name": "Get Admin Users",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/users?skip=0&limit=100",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "users"],
+                  "query": [
+                    {
+                      "key": "skip",
+                      "value": "0"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "100"
+                    },
+                    {
+                      "key": "role",
+                      "value": "",
+                      "disabled": true
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Admin User",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"username\": \"newadmin@example.com\",\n  \"password\": \"securePassword123\",\n  \"email\": \"newadmin@example.com\",\n  \"full_name\": \"New Admin\",\n  \"role\": \"operator\",\n  \"permissions\": [\"stations:read\", \"schedules:read\"],\n  \"is_active\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/users",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "users"]
+                }
+              }
+            },
+            {
+              "name": "Get Admin User",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/users/1",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "users", "1"]
+                }
+              }
+            },
+            {
+              "name": "Update Admin User",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"full_name\": \"Updated Admin Name\",\n  \"email\": \"updated.admin@example.com\",\n  \"role\": \"manager\",\n  \"permissions\": [\"stations:write\", \"schedules:write\", \"analytics:read\"]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/users/1",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "users", "1"]
+                }
+              }
+            },
+            {
+              "name": "Manage Admin User",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"action\": \"activate\",\n  \"reason\": \"User account reactivation\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/users/1/manage",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "users", "1", "manage"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Station Management",
+          "item": [
+            {
+              "name": "Create Station",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"New Central Station\",\n  \"lat\": 13.7563,\n  \"lng\": 100.5018,\n  \"zone_number\": 1,\n  \"is_interchange\": true,\n  \"platform_count\": 4,\n  \"line_id\": 1,\n  \"facilities\": [\"escalator\", \"elevator\", \"restroom\", \"parking\"]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/stations",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "stations"]
+                }
+              }
+            },
+            {
+              "name": "Update Station",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Updated Station Name\",\n  \"platform_count\": 6,\n  \"status\": \"active\",\n  \"is_interchange\": true\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/stations/1",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "stations", "1"]
+                }
+              }
+            },
+            {
+              "name": "Delete Station",
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/stations/1",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "stations", "1"]
+                }
+              }
+            },
+            {
+              "name": "Bulk Station Operations",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"operation\": \"update_status\",\n  \"station_ids\": [1, 2, 3, 4],\n  \"operation_data\": {\n    \"status\": \"maintenance\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/stations/bulk",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "stations", "bulk"]
+                }
+              }
+            },
+            {
+              "name": "Import Stations",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"import_format\": \"json\",\n  \"stations_data\": [\n    {\n      \"name\": \"Import Station 1\",\n      \"lat\": 13.7000,\n      \"lng\": 100.5000,\n      \"line_id\": 1,\n      \"zone_number\": 2\n    },\n    {\n      \"name\": \"Import Station 2\",\n      \"lat\": 13.7100,\n      \"lng\": 100.5100,\n      \"line_id\": 1,\n      \"zone_number\": 2\n    }\n  ],\n  \"validation_mode\": \"strict\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/stations/import",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "stations", "import"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Analytics",
+          "item": [
+            {
+              "name": "Get Booking Analytics",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"date_from\": \"2024-09-01\",\n  \"date_to\": \"2024-09-30\",\n  \"group_by\": \"day\",\n  \"include_cancelled\": false,\n  \"filter_by_line\": [1, 2]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/analytics/bookings",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "analytics", "bookings"]
+                }
+              }
+            },
+            {
+              "name": "Get Route Popularity",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/analytics/routes?limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "analytics", "routes"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Revenue Report",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/analytics/revenue?period=month",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "analytics", "revenue"],
+                  "query": [
+                    {
+                      "key": "period",
+                      "value": "month"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get User Analytics",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/analytics/users",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "analytics", "users"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "System Configuration",
+          "item": [
+            {
+              "name": "Get System Config",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/config?category=general",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "config"],
+                  "query": [
+                    {
+                      "key": "category",
+                      "value": "general"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Update System Config",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"config_updates\": [\n    {\n      \"key\": \"max_booking_advance_days\",\n      \"value\": \"30\",\n      \"category\": \"booking\"\n    },\n    {\n      \"key\": \"default_cancellation_fee\",\n      \"value\": \"50.00\",\n      \"category\": \"payment\"\n    }\n  ]\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/config",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "config"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "System Alerts",
+          "item": [
+            {
+              "name": "Get System Alerts",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alerts?active_only=true&severity=high",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "alerts"],
+                  "query": [
+                    {
+                      "key": "active_only",
+                      "value": "true"
+                    },
+                    {
+                      "key": "severity",
+                      "value": "high"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Resolve Alert",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/alerts/alert-123/resolve",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "alerts", "alert-123", "resolve"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Audit Logs",
+          "item": [
+            {
+              "name": "Get Audit Logs",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/audit-logs?limit=100&action=create&resource=station",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "audit-logs"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "100"
+                    },
+                    {
+                      "key": "action",
+                      "value": "create"
+                    },
+                    {
+                      "key": "resource",
+                      "value": "station"
+                    },
+                    {
+                      "key": "user_id",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "date_from",
+                      "value": "",
+                      "disabled": true
+                    },
+                    {
+                      "key": "date_to",
+                      "value": "",
+                      "disabled": true
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Backup & Maintenance",
+          "item": [
+            {
+              "name": "Get Backup Status",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/backup/status",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "backup", "status"]
+                }
+              }
+            },
+            {
+              "name": "Create Backup",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/backup/create",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "backup", "create"]
+                }
+              }
+            },
+            {
+              "name": "Get Maintenance Windows",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/maintenance/windows?active_only=false",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "maintenance", "windows"],
+                  "query": [
+                    {
+                      "key": "active_only",
+                      "value": "false"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Create Maintenance Window",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"System Maintenance\",\n  \"description\": \"Scheduled system maintenance and updates\",\n  \"start_time\": \"2024-09-15T02:00:00\",\n  \"end_time\": \"2024-09-15T06:00:00\",\n  \"affected_systems\": [\"booking\", \"ticketing\"],\n  \"maintenance_type\": \"system_update\",\n  \"priority\": \"high\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/maintenance/windows",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "maintenance", "windows"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Permissions",
+          "item": [
+            {
+              "name": "Get Permissions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/permissions",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "permissions"]
+                }
+              }
+            },
+            {
+              "name": "Get Role Permissions",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/v1/admin/roles/manager/permissions",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "v1", "admin", "roles", "manager", "permissions"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
